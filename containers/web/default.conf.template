@@ -1,0 +1,40 @@
+upstream backend {
+  server ${NGINX_BACKEND}:3000;
+}
+server {
+  listen 80;
+  server_name localhost;
+
+  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+  # add_header X-Content-Type-Options nosniff always;
+  # add_header X-Frame-Options SAMEORIGIN always;
+  # add_header X-XSS-Protection "1; mode=block" always;
+
+  ## Module ngx_http_realip_module
+  ## http://nginx.org/en/docs/http/ngx_http_realip_module.html
+  set_real_ip_from 10.0.0.0/8;
+  real_ip_header X-Forwarded-For;
+  set $real_ip $realip_remote_addr;
+  set $forwarded_for -;
+  if ($real_ip_temp ~ "([^, ]+) *, *[^, ]+ *$") {
+    set $real_ip $1;
+    set $forwarded_for '$http_x_forwarded_for, $realip_remote_addr';
+  }
+
+  client_max_body_size 30M;
+
+  location ~* ^/ {
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    # add_header X-Content-Type-Options nosniff always;
+    # add_header X-Frame-Options SAMEORIGIN always;
+    # add_header X-XSS-Protection "1; mode=block" always;
+
+    ## nginx - no resolver defined to resolve s3-eu-west-1.amazonaws.com - Stack Overflow
+    ## https://stackoverflow.com/questions/49677656/
+    # resolver 169.254.169.253 valid=30s;
+
+    proxy_cookie_path ~^/(.*)$ "/$1; Secure";
+    proxy_set_header Host $host;
+    proxy_pass http://backend;
+  }
+}
