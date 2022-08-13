@@ -29,9 +29,9 @@ services:
   db:
     image: mysql:5.7
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: friendship3312T
       MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_PASSWORD: friendship3312T
       MYSQL_DATABASE: docker_app_development
     ports:
       - "3306:3306"
