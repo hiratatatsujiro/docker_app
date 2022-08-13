@@ -3,7 +3,7 @@ default: &default
   encoding: utf8
   pool: 5
   username: user
-  password: password
+  password: friendship3312T
   host: db
   # host: <%= ENV['MYSQL_HOST'] %>
   # database: <%= ENV['MYSQL_DATABASE'] %>
@@ -12,9 +12,12 @@ default: &default
 
 development:
   <<: *default
+  database: docker_app_development
 
 test:
   <<: *default
+    database: docker_test_development
+
 
 production:
   <<: *default
